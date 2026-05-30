@@ -1,0 +1,9 @@
+# Default code owners — all PRs require at least one owner review
+* @freedom200
+
+# CI/CD and infrastructure changes
+.github/ @freedom200
+scripts/ @freedom200
+
+# App code
+app/ @freedom200

@@ -1,4 +1,52 @@
-# Stock Market Data Pipeline — Prototype
+# Bassem Platform
+
+Monorepo for the Bassem platform. Contains a Next.js web app, stock market data pipeline, and shared infrastructure.
+
+---
+
+## Project Structure
+
+```
+.
+├── app/                    # Next.js 16 web application (React 19, TypeScript, Tailwind 4)
+├── pipeline/               # Python stock market data pipeline
+│   ├── __init__.py
+│   ├── fetch.py            # DataProvider ABC + YFinanceProvider
+│   └── store.py            # SQLite upsert + query helpers
+├── scripts/                # Infrastructure and setup scripts
+│   └── setup-github-org.sh # GitHub org/repo/branch protection setup
+├── data/                   # Data storage (SQLite, auto-created)
+├── .github/                # GitHub configuration
+│   ├── workflows/
+│   │   ├── ci.yml          # CI pipeline (lint, typecheck, test)
+│   │   └── deploy.yml      # CD pipeline (build, deploy on main)
+│   ├── ISSUE_TEMPLATE/     # Bug report and feature request templates
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   ├── CODEOWNERS
+│   └── dependabot.yml
+├── main.py                 # Python CLI entry point
+├── requirements.txt        # Python dependencies
+└── README.md
+```
+
+---
+
+## Web App (Next.js)
+
+The `app/` directory contains a Next.js 16 application with React 19, TypeScript, and Tailwind CSS 4.
+
+```bash
+cd app
+npm ci
+npm run dev        # Development server (port 3000)
+npm run build      # Production build
+npm run lint       # ESLint
+npm run typecheck  # TypeScript type checking
+```
+
+---
+
+## Stock Market Data Pipeline (Python)
 
 Minimal spike: fetch price data for any ticker, store in SQLite, query via CLI.
 Spike goal: validate feasibility and data source options before a full build.
@@ -160,20 +208,25 @@ SQLite handles millions of rows fine for a single server. When multi-server or s
 
 ---
 
-## Project Structure
+## CI/CD Pipeline
 
-```
-.
-├── main.py           # CLI entry point
-├── pipeline/
-│   ├── __init__.py
-│   ├── fetch.py      # DataProvider ABC + YFinanceProvider
-│   └── store.py      # SQLite upsert + query helpers
-├── data/
-│   └── prices.db     # auto-created on first fetch
-├── requirements.txt
-└── README.md
-```
+### CI (`.github/workflows/ci.yml`)
+Triggers on push to `main`/`develop` and PRs to `main`.
+- Installs Node.js 20.x dependencies in `app/`
+- Runs lint, typecheck, and tests
+- Skips gracefully if no test script is configured
+
+### CD (`.github/workflows/deploy.yml`)
+Triggers on push to `main`.
+- Builds the Next.js app for production
+- Runs smoke tests
+- Deployment targets (Vercel, Railway, SSH) can be uncommented when ready
+
+### Branch Protection
+Run `scripts/setup-github-org.sh` with `GH_TOKEN`, `ORG_NAME`, `REPO_NAME` to auto-configure:
+- Required status checks (`test`)
+- 1 approving review required
+- Dismiss stale reviews on new pushes
 
 ---
 
